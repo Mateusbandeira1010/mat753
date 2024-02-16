@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil do Usuário</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="container-left">
+{{#if isAuthenticated}}
+    <div class="perfil">
+        <p>Bem-vindo, {{name}}!</p>
+        <p>Email: {{email}}</p>
+        <p><a href="/logout">Logout</a></p>
+    </div>
+    <ul class="menu"> 
+        <li><a href="#" onclick="showContent('grafico')">Gráficos</a></li>
+        <li><a href="#" onclick="showContent('graficoCircular')">Desempenho</a></li>
+        <li><a href="#" onclick="showContent('clientes')">Todos Clientes</a></li>
+    </ul>
+</div>
+<div class="container-right">
+    <div id="grafico-content">
+        <div class="grafico-container">
+            <canvas id="grafico"></canvas>
+        </div>
+    </div>
+    <div id="graficoCircular-content">
+        <div class="grafico-container">
+            <canvas id="graficoCircular" class="chart"></canvas>
+        </div>
+        <div class="valores">
+            <p>Valor Total Atual: <span id="valorTotalAtual"></span></p>
+        </div>
+    </div>
+ <div id="clientes-content">
+        <!-- Conteúdo relacionado aos clientes -->
+        <h2>Lista de Clientes</h2>
+        <table id="tabela-clientes" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Quantidade de Parcelas</th>
+                    <th>Parcela 1</th>
+                    <th>Parcela 2</th>
+                    <th>Parcela 3</th>
+                    <th>Parcela 4</th>
+                    <th>Parcela 5</th>
+                    <th>Valor Total</th>
+                    <th>Valor Restante</th>
+                    <th>status</th>
+                </tr>
+            </thead>
+            <tbody id="clientes-table-body">
+                <!-- Os clientes serão adicionados dinamicamente aqui -->
+            </tbody>
+        </table>
+    </div>
+</div>
+{{else}}
+    <p>Você não está autenticado. Faça o cadastro <a href="/loginCad">aqui</a>.</p>
+{{/if}}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+function showContent(id) {
+    // Oculta todos os conteúdos relacionados aos sub-menus
+    document.querySelectorAll('.container-right > div').forEach(content => {
+        content.style.display = 'none';
+    });
+
+    // Mostra o conteúdo correspondente ao ID passado como argumento
+    const contentToShow = document.getElementById(id + '-content');
+    if (contentToShow) {
+        contentToShow.style.display = 'block';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('/clientes')
+      .then(response => response.json())
+      .then(clientes => {
+        const tableBody = document.getElementById('clientes-table-body');
+        tableBody.innerHTML = '';
+
+        clientes.forEach(cliente => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${cliente.id}</td>
+            <td>${cliente.nome}</td>
+            <td>${cliente.quantidadeParcelas}</td>
+            <td>${cliente.parcela1}</td>
+            <td>${cliente.parcela2}</td>
+            <td>${cliente.parcela3}</td>
+            <td>${cliente.parcela4}</td>
+            <td>${cliente.parcela5}</td>
+            <td>${cliente.valorTotal}</td>
+            <td class="valorRestanteCliente">${cliente.valorRestante}</td>
+            <td class="statusCliente">${cliente.valorRestante === '0.00' ? 'Pago com sucesso' : 'Cliente em débito'}</td>
+          `;
+
+          tableBody.appendChild(row);
+        });
+      })
+      .catch(error => console.error('Erro ao buscar clientes:', error));
+});
+
+// Dados do gráfico de barras
+document.addEventListener('DOMContentLoaded', function() {
+    // Dados do gráfico de barras
+    var ctx = document.getElementById('grafico').getContext('2d');
+    var labels = {{{labels}}};
+    var valoresTotais = {{{valoresTotais}}}.map(Number); // Converter para números
+    var valoresRestantes = {{{valoresRestantes}}}.map(Number); // Converter para números
+    var grafico = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Valor Total',
+                data: valoresTotais,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }, {
+                label: 'Valor Restante',
+                data: valoresRestantes,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Atualiza os valores na tela
+    var valorTotalAtual = calcularValorTotalAtual(valoresTotais);
+    var valorRestanteCircular = 50000 - valorTotalAtual;
+    document.getElementById('valorTotalAtual').innerText = valorTotalAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    // Dados do gráfico circular
+    var ctxCircular = document.getElementById('graficoCircular').getContext('2d');
+    var dadosGraficoCircular = [valorTotalAtual, valorRestanteCircular];
+    var cores = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)'];
+
+    var graficoCircular = new Chart(ctxCircular, {
+        type: 'doughnut',
+        data: {
+            labels: ['Valor Total Atual', 'Valor Restante'],
+            datasets: [{
+                data: dadosGraficoCircular,
+                backgroundColor: cores,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+});
+
+// Função para calcular o valor total atual
+function calcularValorTotalAtual(valores) {
+    return valores.reduce((total, current) => total + current, 0);
+}
+
+</script>
+
+</body>
+</html>

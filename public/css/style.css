@@ -1,0 +1,222 @@
+/* Estilos básicos para o menu */
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0; /* Adicionado para remover a margem padrão */
+}
+.menu li {
+    background-color: #f4f4f4;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease; /* Transição suave da cor de fundo */
+}
+.menu a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: #333;
+}
+.menu .sub-menu {
+    display: none;
+    list-style: none;
+    padding-left: 20px;
+}
+.sub-menu.show {
+    display: block;
+}
+
+/* Estilo para o container-left */
+.container-left {
+    float: left; 
+    width: 25%; 
+    padding: 20px; 
+    box-sizing: border-box; 
+    overflow: auto; 
+}
+
+/* Estilo para o container-right */
+.container-right {
+    float: right; 
+    width: 70%; 
+    padding: 20px; 
+    box-sizing: border-box;
+    overflow-x: hidden; 
+}
+
+/* Estilos para o perfil */
+.perfil {
+    margin-bottom: 20px;
+}
+
+/* Estilos para o canvas do gráfico */
+.grafico-container {
+    position: relative;
+    width: 100%;
+    height: 400px;
+}
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Estilos para os sub-menus */
+#vendas-content,
+#relatorios-content,
+#clientes-content,
+#graficoCircular-content {
+    display: none; /* Oculta por padrão */
+}
+
+/* Estilos para os valores */
+.valores {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Cores personalizadas */
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+}
+
+/* Estilos gerais */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Evita a barra de rolagem horizontal */
+    transition: background-color 0.3s ease; /* Transição suave da cor de fundo do corpo */
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px 0;
+    transition: background-color 0.3s ease; /* Transição suave da cor de fundo da barra de navegação */
+}
+.navbar-brand h1 {
+    margin: 0;
+}
+.btn {
+    margin-right: 10px;
+}
+
+/* Formulários */
+form {
+    margin-bottom: 20px;
+}
+label {
+    display: block;
+    margin-top: 10px;
+}
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+button[type="submit"] {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Transição suave da cor de fundo do botão */
+}
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Alertas */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+}
+.alert-success {
+    color: #155724;
+    background-color: var(--success-color);
+    border-color: #c3e6cb;
+}
+.alert-danger {
+    color: #2c0b0f;
+    background-color: var(--danger-color);
+    border-color: #f3c0c5;
+}
+
+/* Autenticação */
+.auth-switch {
+    margin-bottom: 20px;
+}
+.auth-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+}
+.auth-container h2 {
+    margin-top: 0;
+}
+.auth-container input[type="text"],
+.auth-container input[type="email"],
+.auth-container input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+.auth-container button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+/* Perfil do usuário */
+#profile-section {
+    margin-top: 20px;
+}
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 10px;
+    text-align: left;
+}
+td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+td:last-child {
+    text-align: center;
+}
+td a {
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-right: 5px;
+}
+td form button {
+    background-color: var(--danger-color);
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+td form button:hover {
+    background-color: #c82333;
+}
