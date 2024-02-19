@@ -1,0 +1,9 @@
+# Ignorar diretórios do sistema Windows
+AppData/
+Contacts/
+Desktop/
+Documents/
+Downloads/
+Music/
+Pictures/
+Videos/

@@ -25,6 +25,8 @@
         <form id="cadastrarClienteForm" action="/cadastrar-cliente" method="post" onsubmit="return calcularValores()">
             <label for="nome">Nome:</label>
             <input type="text" name="nome" required>
+            <label for="outronome">Produtos</label>
+            <input type="text" name="outronome" required>
             <label for="quantidadeParcelas">Quantidade de Parcelas:</label>
             <input type="number" name="quantidadeParcelas" required>
             <label for="parcela1">Parcela 1:</label>
@@ -66,13 +68,13 @@
                     <td>{{id}}</td>
                     <td>{{nome}}</td>
                     <td>{{quantidadeParcelas}}</td>
-                    <td>{{parcela1}}</td>
-                    <td>{{parcela2}}</td>
-                    <td>{{parcela3}}</td>
-                    <td>{{parcela4}}</td>
-                    <td>{{parcela5}}</td>
-                    <td class="valorTotalCliente">{{valorTotal}}</td>
-                    <td class="valorRestanteCliente">{{valorRestante}}</td>
+                    <td>R${{parcela1}}</td>
+                    <td>R${{parcela2}}</td>
+                    <td>R${{parcela3}}</td>
+                    <td>R${{parcela4}}</td>
+                    <td>R${{parcela5}}</td>
+                    <td class="valorTotalCliente">R${{valorTotal}}</td>
+                    <td class="valorRestanteCliente">R${{valorRestante}}</td>
                     <td>
                         <a href="/atualizar-cliente/{{id}}?parcela1={{parcela1}}&parcela2={{parcela2}}&parcela3={{parcela3}}&parcela4={{parcela4}}&parcela5={{parcela5}}">Editar</a>
                         <form action="/excluir-cliente/{{id}}" method="post" onsubmit="return confirm('Tem certeza que deseja excluir este cliente?');">
