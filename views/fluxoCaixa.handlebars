@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxo de Caixa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Fluxo de Caixa</h1>
+<div id="adicionar-lista">
+  <form id="fluxoCaixaForm" method="POST" action="/fluxoCaixa">
+    <input type="text" name="descricao" placeholder="Descrição">
+    <input type="text" name="resumo" placeholder="Resumo">
+    <input type="text" name="valor" placeholder="Valor">
+    <select name="tipo">
+        <option value="">Selecione o tipo</option>
+        <option value="entrada">Entrada</option>
+        <option value="saida">Saída</option>
+    </select>
+    <button type="submit">Enviar</button>
+</form>
+</div>
+    <div id="listar">
+    <h2>Lista de Fluxo de Caixa</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descrição</th>
+                <th>Resumo</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Data de Registro</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each fluxoCaixa}}
+            <tr>
+                <td>{{id}}</td>
+                <td>{{descricao}}</td>
+                <td>{{resumo}}</td>
+                <td>R${{valor}}</td>
+                <td>{{tipo}}</td>
+                <td>{{data_registro}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+    </div>
+
+      <!-- Informações sobre o caixa de proteção e reinvestimento -->
+  <div>
+    <h2>Informações sobre o Caixa</h2>
+    <p>Valor total cadastrado: <span id="valorTotalCadastrado">{{ valorTotalCadastrado }}</span></p>
+    <p>Valor total retirado: <span id="valorTotalRetirado">{{ valorTotalRetirado }}</span></p>
+  </div>
+
+  
+
+
+
+    <script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    const fluxoCaixa = {{ fluxoCaixa }};
+    const tbody = document.querySelector("#listar tbody");
+
+    fluxoCaixa.forEach(item => {
+        const data_registro = new Date(item.data_registro);
+        const options = { timeZone: 'UTC', weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' };
+        const formato = new Intl.DateTimeFormat('pt-BR', options);
+        const dataFormatada = formato.format(data_registro);
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.descricao}</td>
+            <td>${item.resumo}</td>
+            <td>R$ ${item.valor}</td>
+            <td>${item.tipo}</td>
+            <td>${dataFormatada}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    // Atualizar valores totais
+    const valorTotalCadastrado = parseInt("{{ valorTotalCadastrado }}");
+    const valorTotalRetirado = parseInt("{{ valorTotalRetirado }}");
+
+    document.getElementById("valorTotalCadastrado").innerText = "Valor total cadastrado: R$ " + valorTotalCadastrado.toLocaleString('pt-BR');
+    document.getElementById("valorTotalRetirado").innerText = "Valor total retirado: R$ " + valorTotalRetirado.toLocaleString('pt-BR');
+});
+
+
+
+
+    
+
+
+    </script>
+
+</body>
+</html>

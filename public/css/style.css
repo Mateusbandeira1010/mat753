@@ -5,7 +5,8 @@
     margin: 0; 
 }
 .menu li {
-    background-color: #f4f4f4;
+    background-color: #12111F;
+    color: #fafafafa;
     margin-bottom: 5px;
     transition: background-color 0.3s ease; 
 }
@@ -13,7 +14,6 @@
     display: block;
     padding: 10px;
     text-decoration: none;
-    color: #333;
 }
 .menu .sub-menu {
     display: none;
@@ -27,19 +27,19 @@
 /* Estilo para o container-left */
 .container-left {
     float: left; 
-    width: 20%;
+    width: 100%;
     padding: 20px; 
     box-sizing: border-box; 
-    overflow: auto; 
+    overflow: auto;
 }
 
 /* Estilo para o container-right */
 .container-right {
     float: right; 
-    width: 80%; 
+    width: 100%; 
     padding: 20px; 
     box-sizing: border-box;
-    overflow-x: hidden; 
+   
 }
 
 /* Estilos para o perfil */
@@ -51,7 +51,8 @@
 .grafico-container {
     position: relative;
     width: 100%;
-    height: 400px;
+    height: 600px;
+    overflow: scroll;
 }
 canvas {
     position: absolute;
@@ -64,7 +65,7 @@ canvas {
 #relatorios-content,
 #clientes-content,
 #graficoCircular-content {
-    display: none; /* Oculta por padrão */
+    display: none; 
 }
 
 /* Estilos para os valores */
@@ -127,7 +128,7 @@ button[type="submit"] {
     padding: 10px 20px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.3s ease; /* Transição suave da cor de fundo do botão */
+    transition: background-color 0.3s ease;
 }
 button[type="submit"]:hover {
     background-color: #0056b3;
@@ -176,7 +177,7 @@ button[type="submit"]:hover {
     box-sizing: border-box;
 }
 .auth-container button[type="submit"] {
-    width: 100%;
+    width: 80%;
     padding: 10px;
     margin-top: 10px;
 }
@@ -189,9 +190,10 @@ button[type="submit"]:hover {
 /* Tabelas */
 table {
     width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+    border-collapse: inherit;
+    margin-bottom: 10px;
 }
+
 th {
     background-color: var(--primary-color);
     color: #fff;
@@ -223,4 +225,69 @@ td form button:hover {
 
 .pago {
     color: green;
+}
+
+#valorTotalCadastrado {
+    
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: blue; 
+  }
+  
+  #valorTotalRetirado {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 18px;
+    color: red; 
+  }
+  
+
+  /*-------------------------------------aba usuario cores dos clientes pago e nao pagou---------------------------- */
+
+  .verde {
+    background-color: lightgreen !important;
+}
+
+.vermelho {
+    background-color: lightcoral !important;
+}
+
+
+
+/*-------------------------------------------------------Perfil do usuario---------------------------- */
+
+.perfil {
+    text-align: center; 
+    background-color: #12111F; 
+    border-radius: 10px; 
+    color: #0562db;
+    padding: 20px; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 20px; 
+}
+
+
+.perfil img {
+    width: 140px; 
+    height: 70px; 
+    border-radius: 50%; 
+    border: 2px solid #ffffff; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+
+.perfil p {
+    margin: 10px 0; 
+}
+
+
+.perfil a {
+    color: #c82333; 
+    text-decoration: none; 
+}
+
+
+.perfil a:hover {
+    text-decoration: underline; 
 }

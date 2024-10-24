@@ -8,176 +8,187 @@
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<div class="container-left">
-{{#if isAuthenticated}}
-    <div class="perfil">
-        <p>Bem-vindo, {{name}}!</p>
-        <p>Email: {{email}}</p>
-        <p><a href="/logout">Logout</a></p>
-    </div>
-    <ul class="menu"> 
-        <li><a href="#" onclick="showContent('grafico')">Gráficos</a></li>
-        <li><a href="#" onclick="showContent('graficoCircular')">Desempenho</a></li>
-        <li><a href="#" onclick="showContent('clientes')">Todos Clientes</a></li>
-    </ul>
-</div>
-<div class="container-right">
-    <div id="grafico-content">
-        <div class="grafico-container">
-            <canvas id="grafico"></canvas>
+    <div class="container-left">
+    {{#if isAuthenticated}}
+        <div class="perfil">
+            <img src="/img/logo.png" alt="logo empresa">
+            <p>Bem-vindo, {{name}}!</p>
+            <p>Email: {{email}}</p>
+            <p><a href="/logout" style="background-color: rgb(141, 17, 17); width: 100px; height: 40px; display: inline-block; text-align: center; line-height: 40px; color: white; text-decoration: none;">Sair</a></p>
+        </div>
+        <ul class="menu"> 
+            <li><a href="#" onclick="showContent('grafico')">Gráficos</a></li>
+            <li><a href="#" onclick="showContent('graficoCircular')">Desempenho</a></li>
+            <li><a href="#" onclick="showContent('clientes')">Todos Clientes</a></li>
+        </ul>
+    <div class="container-right">
+        <div id="grafico-content">
+            <div class="grafico-container">
+                <canvas id="grafico"></canvas>
+            </div>
+        </div>
+        <div id="graficoCircular-content">
+            <div class="grafico-container">
+                <canvas id="graficoCircular" class="chart"></canvas>
+            </div>
+            <div class="valores">
+                <p>Valor Total Atual: <span id="valorTotalAtual"></span></p>
+            </div>
+        </div>
+    <div id="clientes-content">
+            <!-- Conteúdo relacionado aos clientes -->
+            <h2>Lista de Clientes</h2>
+            <table id="tabela-clientes" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Quantidade Parcelas</th>
+                        <th>Parcela 1</th>
+                        <th>Parcela 2</th>
+                        <th>Parcela 3</th>
+                        <th>Parcela 4</th>
+                        <th>Parcela 5</th>
+                        <th>Valor Total</th>
+                        <th>Valor Restante</th>
+                        <th>Cliente Status</th>
+                    </tr>
+                </thead>
+                <tbody id="clientes-table-body">
+                    <!-- Os clientes serão adicionados dinamicamente aqui -->
+                </tbody>
+            </table>
         </div>
     </div>
-    <div id="graficoCircular-content">
-        <div class="grafico-container">
-            <canvas id="graficoCircular" class="chart"></canvas>
-        </div>
-        <div class="valores">
-            <p>Valor Total Atual: <span id="valorTotalAtual"></span></p>
-        </div>
-    </div>
- <div id="clientes-content">
-        <!-- Conteúdo relacionado aos clientes -->
-        <h2>Lista de Clientes</h2>
-        <table id="tabela-clientes" class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Quantidade de Parcelas</th>
-                    <th>Parcela 1</th>
-                    <th>Parcela 2</th>
-                    <th>Parcela 3</th>
-                    <th>Parcela 4</th>
-                    <th>Parcela 5</th>
-                    <th>Valor Total</th>
-                    <th>Valor Restante</th>
-                    <th>status</th>
-                </tr>
-            </thead>
-            <tbody id="clientes-table-body">
-                <!-- Os clientes serão adicionados dinamicamente aqui -->
-            </tbody>
-        </table>
-    </div>
-</div>
-{{else}}
-    <p>Você não está autenticado. Faça o cadastro <a href="/loginCad">aqui</a>.</p>
-{{/if}}
+    {{else}}
+        <p>Você não está autenticado. Faça o cadastro <a href="/loginCad">aqui</a>.</p>
+    {{/if}}
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script>
-function showContent(id) {
-    // Oculta todos os conteúdos relacionados aos sub-menus
-    document.querySelectorAll('.container-right > div').forEach(content => {
-        content.style.display = 'none';
+    <script>
+    function showContent(id) {
+        // Oculta todos os conteúdos relacionados aos sub-menus
+        document.querySelectorAll('.container-right > div').forEach(content => {
+            content.style.display = 'none';
+        });
+
+        // Mostra o conteúdo correspondente ao ID passado como argumento
+        const contentToShow = document.getElementById(id + '-content');
+        if (contentToShow) {
+            contentToShow.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/clientes')
+        .then(response => response.json())
+        .then(clientes => {
+            console.log('Dados dos clientes:', clientes);
+            const tableBody = document.getElementById('clientes-table-body');
+            tableBody.innerHTML = '';
+
+            clientes.forEach(cliente => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${cliente.id}</td>
+                <td>${cliente.nome}</td>
+                <td>${cliente.quantidadeParcelas}</td>
+                <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="1">${cliente.parcela1}</td>
+                <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="2">${cliente.parcela2}</td>
+                <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="3">${cliente.parcela3}</td>
+                <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="4">${cliente.parcela4}</td>
+                <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="5">${cliente.parcela5}</td>
+                <td>${cliente.valorTotal}</td>
+                <td class="valorRestanteCliente">${cliente.valorRestante}</td>
+                <td class="statusCliente">${cliente.valorRestante === '0.00' ? 'Pago com sucesso' : 'Cliente em débito'}</td>
+            `;
+
+            // Adicionando classes para destacar o status do cliente
+            if (cliente.valorRestante === '0.00') {
+                row.querySelector('.statusCliente').classList.add('verde');
+            } else {
+                row.querySelector('.statusCliente').classList.add('vermelho');
+            }
+
+            tableBody.appendChild(row);
+            });
+        })
+        .catch(error => console.error('Erro ao buscar clientes:', error));
     });
 
-    // Mostra o conteúdo correspondente ao ID passado como argumento
-    const contentToShow = document.getElementById(id + '-content');
-    if (contentToShow) {
-        contentToShow.style.display = 'block';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('/clientes')
-      .then(response => response.json())
-      .then(clientes => {
-        const tableBody = document.getElementById('clientes-table-body');
-        tableBody.innerHTML = '';
-
-        clientes.forEach(cliente => {
-          const row = document.createElement('tr');
-          row.innerHTML = `
-            <td>${cliente.id}</td>
-            <td>${cliente.nome}</td>
-            <td>${cliente.quantidadeParcelas}</td>
-            <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="1">${cliente.parcela1}</td>
-            <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="2">${cliente.parcela2}</td>
-            <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="3">${cliente.parcela3}</td>
-            <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="4">${cliente.parcela4}</td>
-            <td class="parcela" data-cliente-id="${cliente.id}" data-parcela="5">${cliente.parcela5}</td>
-            <td>${cliente.valorTotal}</td>
-            <td class="valorRestanteCliente">${cliente.valorRestante}</td>
-            <td class="statusCliente">${cliente.valorRestante === '0.00' ? 'Pago com sucesso' : 'Cliente em débito'}</td>
-          `;
-
-          tableBody.appendChild(row);
-        });
-      })
-      .catch(error => console.error('Erro ao buscar clientes:', error));
-});
 
 
-// Dados do gráfico de barras
-document.addEventListener('DOMContentLoaded', function() {
+
+
     // Dados do gráfico de barras
-    var ctx = document.getElementById('grafico').getContext('2d');
-    var labels = {{{labels}}};
-    var valoresTotais = {{{valoresTotais}}}.map(Number); // Converter para números
-    var valoresRestantes = {{{valoresRestantes}}}.map(Number); // Converter para números
-    var grafico = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Valor Total',
-                data: valoresTotais,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }, {
-                label: 'Valor Restante',
-                data: valoresRestantes,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgba(54, 162, 235, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        var ctx = document.getElementById('grafico').getContext('2d');
+        var labels = {{{labels}}};
+        var valoresTotais = {{{valoresTotais}}}.map(Number);
+        var valoresRestantes = {{{valoresRestantes}}}.map(Number); 
+        var grafico = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Valor Total',
+                    data: valoresTotais,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Valor Restante',
+                    data: valoresRestantes,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
-        }
+        });
+
+        // Atualiza os valores na tela
+        var valorTotalAtual = calcularValorTotalAtual(valoresTotais);
+        var valorRestanteCircular = 50000 - valorTotalAtual;
+        document.getElementById('valorTotalAtual').innerText = valorTotalAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // Dados do gráfico circular
+        var ctxCircular = document.getElementById('graficoCircular').getContext('2d');
+        var dadosGraficoCircular = [valorTotalAtual, valorRestanteCircular];
+        var cores = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)'];
+
+        var graficoCircular = new Chart(ctxCircular, {
+            type: 'doughnut',
+            data: {
+                labels: ['Valor Total Atual', 'Valor Restante'],
+                datasets: [{
+                    data: dadosGraficoCircular,
+                    backgroundColor: cores,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
     });
 
-    // Atualiza os valores na tela
-    var valorTotalAtual = calcularValorTotalAtual(valoresTotais);
-    var valorRestanteCircular = 50000 - valorTotalAtual;
-    document.getElementById('valorTotalAtual').innerText = valorTotalAtual.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-    // Dados do gráfico circular
-    var ctxCircular = document.getElementById('graficoCircular').getContext('2d');
-    var dadosGraficoCircular = [valorTotalAtual, valorRestanteCircular];
-    var cores = ['rgba(255, 99, 132, 0.7)', 'rgba(54, 162, 235, 0.7)'];
-
-    var graficoCircular = new Chart(ctxCircular, {
-        type: 'doughnut',
-        data: {
-            labels: ['Valor Total Atual', 'Valor Restante'],
-            datasets: [{
-                data: dadosGraficoCircular,
-                backgroundColor: cores,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-    });
-});
-
-// Função para calcular o valor total atual
-function calcularValorTotalAtual(valores) {
-    return valores.reduce((total, current) => total + current, 0);
-}
+    // Função para calcular o valor total atual
+    function calcularValorTotalAtual(valores) {
+        return valores.reduce((total, current) => total + current, 0);
+    }
 
 
-</script>
+    </script>
 
-</body>
+    </body>
 </html>

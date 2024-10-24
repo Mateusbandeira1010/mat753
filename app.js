@@ -7,6 +7,7 @@ const mysql = require('mysql2');
 const path = require('path');
 const fs = require('fs');
 const Chart = require('chart.js');
+const { error } = require('console');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -240,6 +241,7 @@ app.post('/cadastrar-cliente', (req, res) => {
   const { nome, quantidadeParcelas, parcela1, parcela2, parcela3, parcela4, parcela5 } = req.body;
   const userId = req.session.userId;
 
+
   const valorTotal = parseFloat(parcela1) + parseFloat(parcela2) + parseFloat(parcela3) + parseFloat(parcela4) + parseFloat(parcela5);
   const valorRestante = valorTotal;
   const totalParcelamento = quantidadeParcelas * parseFloat(parcela1);
@@ -248,15 +250,19 @@ app.post('/cadastrar-cliente', (req, res) => {
   const values = [nome, quantidadeParcelas, parcela1, parcela2, parcela3, parcela4, parcela5, valorTotal, valorRestante, totalParcelamento, userId];
 
   db.query(sql, values, (err, results) => {
-    if (err) {
-      console.error('Error inserting client:', err);
-      req.session.errorMessage = 'Erro ao cadastrar cliente. Tente novamente.';
-    } else {
-      req.session.successMessage = 'Cliente cadastrado com sucesso!';
-    }
-    res.redirect('/');
+      if (err) {
+          console.error('Error inserting client:', err);
+          req.session.errorMessage = 'Erro ao cadastrar cliente. Tente novamente.';
+      } else {
+          req.session.successMessage = 'Cliente cadastrado com sucesso!';
+      }
+      res.redirect('/');
   });
 });
+
+
+
+
 
 
 
@@ -399,6 +405,82 @@ app.post('/atualizar-valor-restante', (req, res) => {
 
 
 });
+
+
+
+app.get('/fluxoCaixa', (req, res) => {
+  
+  const isAuthenticated = req.session.email ? true : false;
+
+
+  if (!isAuthenticated) {
+    req.session.errorMessage = 'Por favor, faça login primeiro para acessar o fluxo de caixa.';
+    return res.redirect('/loginCad');
+  }
+
+  const sql = 'SELECT * FROM fluxo_caixa';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('Erro ao recuperar dados do fluxo de caixa:', err);
+      res.status(500).send('Erro ao recuperar dados do fluxo de caixa.');
+    } else {
+   
+      let valorTotalCadastrado = 0;
+      let valorTotalRetirado = 0;
+      results.forEach(item => {
+      
+        const valor = Math.floor(parseFloat(item.valor));
+        if (item.tipo === 'entrada') {
+          valorTotalCadastrado += valor;
+        } else if (item.tipo === 'saida') {
+          valorTotalRetirado += valor;
+        }
+      });
+
+      // Renderizar a página com os dados e enviar para o frontend
+      res.render('fluxoCaixa', {
+        fluxoCaixa: results,
+        valorTotalCadastrado,
+        valorTotalRetirado,
+        isAuthenticated: true
+      });
+    }
+  });
+});
+
+
+
+
+
+
+
+app.post('/fluxoCaixa', (req, res) => {
+  const { descricao, resumo, valor, tipo } = req.body;
+  console.log('Dados Recebidos:', descricao, resumo, valor, tipo);
+
+  // Verifica se o valor está no formato correto (números e ponto decimal)
+  const parsedValor = parseFloat(valor.replace(',', '.')); // Substitui ',' por '.' e converte para float
+
+  if (isNaN(parsedValor)) {
+    console.error('Valor inválido:', valor);
+    res.status(400).send('Valor inválido: ' + valor);
+    return;
+  }
+
+  const SQL = 'INSERT INTO fluxo_caixa (descricao, resumo, valor, tipo, data_registro) VALUES (?, ?, ?, ?, NOW())';
+  const VALUES = [descricao, resumo, parsedValor, tipo];
+
+  db.query(SQL, VALUES, (err, result) => {
+    if (err) {
+      console.error('Erro ao inserir dados do fluxo de caixa:', err);
+      res.status(500).send('Erro ao salvar os dados do fluxo de caixa no banco de dados');
+    } else {
+      console.log('Dados do fluxo de caixa inseridos com sucesso!');
+      res.redirect('/fluxoCaixa');
+    }
+  });
+});
+
 
 
 app.listen(port, () => {

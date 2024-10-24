@@ -11,7 +11,7 @@
 
 <body>
     <div class="container">
-        <h1>Bem-vindo</h1>
+        <h1>Bem-vindo Aba Cadastros</h1>
         {{#if isAuthenticated}}
         <p>Olá,{{name}}!</p>
         <a href="/Meu-usuario">Meu Usuário</a>
@@ -25,8 +25,6 @@
         <form id="cadastrarClienteForm" action="/cadastrar-cliente" method="post" onsubmit="return calcularValores()">
             <label for="nome">Nome:</label>
             <input type="text" name="nome" required>
-            <label for="outronome">Produtos</label>
-            <input type="text" name="outronome" required>
             <label for="quantidadeParcelas">Quantidade de Parcelas:</label>
             <input type="number" name="quantidadeParcelas" required>
             <label for="parcela1">Parcela 1:</label>
