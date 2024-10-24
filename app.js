@@ -14,10 +14,10 @@ const port = process.env.PORT || 3000;
 
 // Configuração do banco de dados
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '753753',
-  database: 'cliente',
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
 });
 
 
