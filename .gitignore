@@ -1,5 +1,5 @@
 # Ignorar diretórios do sistema Windows
-.env
+
 AppData/
 Contacts/
 Desktop/
@@ -8,3 +8,45 @@ Downloads/
 Music/
 Pictures/
 Videos/
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# IDE specific files
+*.iml
+.idea/
+.vscode/
+*.swp
+
+# Maven specific files
+target/
+*.jar
+*.war
+
+# Gradle specific files
+build/
+*.db
+
+# Node.js specific files
+node_modules/
+
+# Spring Boot specific files
+*.properties
+*.yml
+
+# Environment files
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+*.zip
+*.tar.gz
+*.tar.bz2
+*.bak
+*.tmp
