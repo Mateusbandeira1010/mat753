@@ -1,4 +1,5 @@
 # Ignorar diretórios do sistema Windows
+.env
 AppData/
 Contacts/
 Desktop/
