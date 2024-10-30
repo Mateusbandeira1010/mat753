@@ -1,39 +1,43 @@
 const express = require('express');
 const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
 const exphbs = require('express-handlebars');
 const bcrypt = require('bcryptjs');
-const mysql = require('mysql2');
 const path = require('path');
 const fs = require('fs');
 const Chart = require('chart.js');
 const { error } = require('console');
+const { Pool } = require('pg');
+const pgSession = require('connect-pg-simple')(session);
+require('dotenv').config();
+
+
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORTPRD || 3000;
 
 // Configuração do banco de dados
-const db = mysql.createConnection({
+const db = new Pool({
   host: process.env.HOST,
   user: process.env.USER,
   password: process.env.PASSWORD,
   database: process.env.DATABASE,
+  port: process.env.PORT || 5432, // Inclua a porta se necessário
 });
 
 
 db.connect((err) => {
   if (err) {
-    console.error('Error connecting to MySQL:', err);
+    console.error('Erro ao conectar ao PostgreSQL:', err);
   } else {
-    console.log('Connected to MySQL');
+    console.log('Conectado ao PostgreSQL');
   }
 });
 
 
-const sessionStore = new MySQLStore({
-  expiration: 86400000,
-  endConnectionOnClose: false,
-}, db);
+const sessionStore = new pgSession({
+  pool: db, // Aqui, usamos o pool do PostgreSQL criado acima
+  tableName: 'sessions' // Nome da tabela para armazenar sessões
+});
 
 app.use(session({
   secret: 'anysecret',
@@ -87,7 +91,7 @@ app.get('/', (req, res) => {
       return res.redirect('/loginCad');
   }
 
-  const sql = 'SELECT * FROM clientes WHERE user_id = ?';
+  const sql = 'SELECT * FROM clientes WHERE user_id = $1';
   const userId = req.session.userId;
 
   // Executa a consulta SQL
@@ -170,7 +174,7 @@ app.post('/signup', (req, res) => {
 
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  const sql = 'INSERT INTO usuario (name, email, password) VALUES (?, ?, ?)';
+  const sql = 'INSERT INTO usuario (name, email, password) VALUES ($1, $2, $3) RETURNING id';
   db.query(sql, [name, email, hashedPassword], (err, results) => {
     if (err) {
       console.error('Error inserting user:', err);
@@ -182,6 +186,7 @@ app.post('/signup', (req, res) => {
     }
   });
 });
+
 
 app.get('/Meu-usuario', (req, res) => {
   if (!req.session.email) {
@@ -369,8 +374,8 @@ app.post('/excluir-cliente/:id', (req, res) => {
 
 app.get('/meus-clientes', (req, res) => {
   const userId = req.session.userId;
+  const sql = 'SELECT * FROM clientes WHERE user_id = $1';
 
-  const sql = 'SELECT * FROM clientes WHERE user_id = ?';
   db.query(sql, [userId], (err, results) => {
     if (err) {
       console.error('Error querying clients:', err);
@@ -387,7 +392,7 @@ app.get('/meus-clientes', (req, res) => {
 app.get('/clientes', (req, res) => {
   const userId = req.session.userId;
 
-  const sql = 'SELECT * FROM clientes WHERE user_id = ?';
+  const sql = 'SELECT * FROM clientes WHERE user_id = $1';
   db.query(sql, [userId], (err, results) => {
     if (err) {
       console.error('Error querying clients:', err);
